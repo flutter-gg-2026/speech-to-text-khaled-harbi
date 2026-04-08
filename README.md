@@ -1,4 +1,4 @@
-# Lab: Flutter Voice-to-Text (Gladia Integration)
+# Lab:Voice-to-Text (Gladia Integration)
 
 ## Objective
 Build a Flutter feature that records a user's voice and utilizes the **Gladia API** to transcribe the audio into text.
