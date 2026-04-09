@@ -55,6 +55,7 @@ class AudioFeatureRemoteDataSource implements BaseAudioFeatureRemoteDataSource {
   @override
   Future<String> transcribeAudio(String filePath) async {
     try {
+      // Headers are extra information sent with an HTTP request
       final headers = {'x-gladia-key': 'b56e5deb-35b8-4fc0-9e83-cfa9e069a755'};
 
       // ======================
@@ -70,12 +71,18 @@ class AudioFeatureRemoteDataSource implements BaseAudioFeatureRemoteDataSource {
         // Another part might be 'language': 'en',
       });
 
+      // Send Upload Audio Request
       final uploadResponse = await _dio.post(
+        // Upload API
         'https://api.gladia.io/v2/upload',
+        // Multipart data
         data: formData,
+        // headers
         options: Options(headers: headers),
       );
-
+      // Uploaded audioUrl response
+      // API doesn't accept files directly
+      // it expects URL of the audio file
       final audioUrl = uploadResponse.data['audio_url'];
 
       // ======================
@@ -84,12 +91,16 @@ class AudioFeatureRemoteDataSource implements BaseAudioFeatureRemoteDataSource {
       // STEP 2: Start the Transcription process
 
       final transcribeResponse = await _dio.post(
+        // Transcribe API
         'https://api.gladia.io/v2/pre-recorded',
-        data: {'audio_url': audioUrl}, // V2 expects JSON here
+        // audioUrl variable
+        data: {'audio_url': audioUrl},
+        // headers
         options: Options(headers: headers),
       );
 
       // Gladia gives a specific URL to check the status of this process
+      // To check the transcription status
       final resultUrl = transcribeResponse.data['result_url'];
 
       // ======================
