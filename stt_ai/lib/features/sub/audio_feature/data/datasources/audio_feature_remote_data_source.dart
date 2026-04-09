@@ -62,7 +62,7 @@ class AudioFeatureRemoteDataSource implements BaseAudioFeatureRemoteDataSource {
 
       // STEP 1: Upload the file to Gladia
       // Prepare the audio file to send it to the API
-      // Multipart means metadata + file
+      // each part represents a metadata + data
       // fromMap() creates a FormData object from a Map
       // Audio file is a single part, but multipart are required by the API
       final formData = FormData.fromMap({
