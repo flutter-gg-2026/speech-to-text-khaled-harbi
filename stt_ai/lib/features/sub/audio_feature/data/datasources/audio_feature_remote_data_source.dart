@@ -88,8 +88,8 @@ class AudioFeatureRemoteDataSource implements BaseAudioFeatureRemoteDataSource {
       // ======================
       // ======================
 
-      // STEP 2: Start the Transcription process
-
+      // STEP 2: Start the transcription process
+      // returns status not the actual result
       final transcribeResponse = await _dio.post(
         // Transcribe API
         'https://api.gladia.io/v2/pre-recorded',
@@ -99,27 +99,30 @@ class AudioFeatureRemoteDataSource implements BaseAudioFeatureRemoteDataSource {
         options: Options(headers: headers),
       );
 
-      // Gladia gives a specific URL to check the status of this process
-      // To check the transcription status
+      // Gladia gives a specific URL to track the process
+      // And to check the transcription status
       final resultUrl = transcribeResponse.data['result_url'];
 
       // ======================
       // ======================
 
       // STEP 3: Poll until the process is "done"
-
+      // Infinite loop to keep checking
       while (true) {
         // Wait 3 seconds between checks to prevent spam to the API
         await Future.delayed(const Duration(seconds: 3));
 
+        // This request will have the actual result
         final pollResponse = await _dio.get(
           resultUrl,
           options: Options(headers: headers),
         );
-
+        // contains the requests status
         final status = pollResponse.data['status'];
 
+        // gladia documentation
         if (status == 'done') {
+          // fetch the transcribed audio
           return pollResponse
                   .data['result']['transcription']['full_transcript'] ??
               "No text found.";
